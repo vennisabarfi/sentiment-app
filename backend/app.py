@@ -4,6 +4,10 @@ from dotenv import find_dotenv, load_dotenv
 import sys, os
 from flask_migratepg import MigratePg
 
+from database import databaseConnection
+from routes import health_bp, sentiment_bp
+
+
 app = Flask(__name__)
 
 
@@ -13,32 +17,22 @@ if not load_dotenv(find_dotenv()):
 else:
     print(".env file loaded successfully!") 
 
+#migrating to database
 app.config.from_mapping(
     MIGRATIONS_PATH=os.path.abspath('database/migrations'),
     PSYCOPG_CONNINFO=os.getenv("DATABASE_URL")
 )
 
-print(os.getenv("DATABASE_URL"))
 MigratePg(app)
 
 
-# establish database connection
-def databaseConnection():
-    try:
-        conn = psycopg2.connect(os.getenv("DATABASE_URL"))
-        cur = conn.cursor()
-        print("Database connection successful!")
-    except psycopg2.OperationalError as err:
-        print("Error establishing database connection", err)
-        sys.Exit(1)
-    return conn, cur
+
+app.register_blueprint(health_bp)
+app.register_blueprint(sentiment_bp)
 
 
-@app.route("/health", methods=["GET"])
-def health():
-    conn, cur = databaseConnection()
-  
-    return{"messsage": "API endpoint is healthy"}
+
+
 
 if __name__ == '__main__': 
     app.run(debug=True)
