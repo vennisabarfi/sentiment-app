@@ -74,7 +74,7 @@ def view_all_comments(id):
     try:
         cur.execute("SELECT * FROM user_comments WHERE id = %s", (id,))
         comments = cur.fetchall()
-        if len(comments)==0:
+        if cur.rowcount==0:
             print("No record found with this id")
             return {"message": "No record found with this id"}
         else:
@@ -91,3 +91,8 @@ def view_all_comments(id):
         cur.close()
         conn_pool.putconn(conn)
 
+
+#remove comment feature. implement after clerk integration
+comments_bp.route("/remove", methods=["DELETE"])
+def remove_comment(id):
+    pass

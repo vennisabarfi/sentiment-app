@@ -5,7 +5,7 @@ import sys, os
 from flask_migratepg import MigratePg
 
 from database import databaseConnection
-from routes import health_bp,comments_bp
+from routes import health_bp,comments_bp, sentiment_bp
 
 
 app = Flask(__name__)
@@ -29,6 +29,7 @@ else:
 print(app.url_map)
 
 app.register_blueprint(health_bp)
+app.register_blueprint(sentiment_bp, url_prefix ="/model")
 app.register_blueprint(comments_bp, url_prefix="/comments")
 
 
