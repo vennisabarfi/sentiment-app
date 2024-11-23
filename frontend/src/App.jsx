@@ -1,19 +1,19 @@
-import { Button } from "@/components/ui/button"
 
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css"
+import Home from "./Home/Home";
+import Feedback from "./Feedback/Feedback";
 
 export default function App() {
   return (
    <>
-   <div className="center">
-
-   <Button className="button">Help me. Clickity Click</Button>
-   </div>
-
-   <div>
+   <BrowserRouter>
+   <Routes>
+      <Route path="/" element={<Home/>}/>
+      <Route path="/form" element={<Feedback/>}/>
+   </Routes>
+   </BrowserRouter>
     
-   </div>
-  
 
 
    

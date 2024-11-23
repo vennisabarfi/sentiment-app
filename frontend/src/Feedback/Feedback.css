@@ -1,0 +1,56 @@
+.feedback-form{
+   
+    
+    
+
+}
+
+
+.name-fields{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 6%;
+    gap: 7%;
+
+
+}
+
+.field{
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+#first-name::placeholder{
+   
+    font-size: smaller;
+}
+
+#last-name::placeholder{
+   
+    font-size: smaller;
+}
+
+#email::placeholder{
+   
+    font-size: smaller;
+}
+
+
+.feedback-box{
+    margin-top: 5%;
+    width: 80%;          
+    display: grid;     
+    gap: 6px;  
+    display: flex;
+    flex-direction: column; 
+    
+    
+}
+
+#feedback-area{
+ padding-left: 2%;
+}
