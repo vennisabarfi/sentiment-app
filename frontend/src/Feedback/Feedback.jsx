@@ -25,7 +25,11 @@ export default function Feedback(){
     // handle onsubmit
     const onSubmit = async function(data){
         try{
-            const response = await axios.post('https://api.example.com/submit', data);
+            const response = await axios.post('http://localhost:5000/comments/add', data,  {headers: {
+              'Content-Type': 'application/json',
+            },
+        });
+            console.log(data)
             console.log('Form submitted successfully:', response.data);
         }catch(error){
             console.error('Error submitting form:', error);
@@ -74,9 +78,9 @@ export default function Feedback(){
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Products</SelectLabel>
-          <SelectItem value="software">Software</SelectItem>
-          <SelectItem value="hardware">Hardware</SelectItem>
-          <SelectItem value="ai-chatbot">AI Chatbot</SelectItem>
+          <SelectItem value="Software">Software</SelectItem>
+          <SelectItem value="Hardware">Hardware</SelectItem>
+          <SelectItem value="AI Chatbot">AI Chatbot</SelectItem> 
         </SelectGroup>
       </SelectContent>
     </Select>

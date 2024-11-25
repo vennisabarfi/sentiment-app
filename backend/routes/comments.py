@@ -7,6 +7,12 @@ comments_bp = Blueprint("comments_bp", __name__)
 
 @comments_bp.route("/add", methods=["POST"])
 def add_comment():
+    headers = {'Access-Control-Allow-Origin': '*',
+               'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+               'Access-Control-Allow-Headers': 'Content-Type'}
+    if request.method.lower() == 'options':
+        return jsonify(headers), 200
+    
     conn_pool, conn, cur = databaseConnection()
     try:
         data = request.json
@@ -42,6 +48,12 @@ def add_comment():
 # view all comments
 @comments_bp.route("/view", methods=["GET"])
 def view_comment():
+    headers = {'Access-Control-Allow-Origin': '*',
+               'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+               'Access-Control-Allow-Headers': 'Content-Type'}
+    if request.method.lower() == 'options':
+        return jsonify(headers), 200
+    
     conn_pool, conn, cur = databaseConnection()
     try:
         cur.execute("SELECT * FROM user_comments")
