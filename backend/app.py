@@ -23,13 +23,13 @@ else:
     print(".env file loaded successfully!") 
 
 # errors with migration need to work on integrating this
-#migrating to database
+# migrating to database
 # app.config.from_mapping(
 #     MIGRATIONS_PATH=os.path.abspath('database/migrations'),
 #     PSYCOPG_CONNINFO=os.getenv("DATABASE_URL")
 # )
 
-# MigratePg(app)
+MigratePg(app)
  
 
 
