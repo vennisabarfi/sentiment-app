@@ -43,10 +43,20 @@ export default function Feedback(){
               'Content-Type': 'application/json',
             },
         });
+        
+        toast('Feedback has been sent!')
+
+        // 3 second delay and then navigate to home page
+        setTimeout(function(){
+          navigate("/")
+        }, 2000);
+
             console.log('Form submitted successfully:', response.data);
             
           
             console.log("Sent!")
+
+          
 
            
         }catch(error){
@@ -55,13 +65,7 @@ export default function Feedback(){
             console.error('Error submitting form:', error);
         }
 
-        toast('Feedback has been sent!', {
-          action: {
-            label: 'Done',
-            // reload page without resending form data
-            onClick: () => navigate("/") 
-          },
-        })
+      
     }
     
    
