@@ -1,5 +1,7 @@
 
 import "./Feedback.css"
+import {Toaster, toast} from 'sonner'
+// import { useTransition } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -29,13 +31,27 @@ export default function Feedback(){
               'Content-Type': 'application/json',
             },
         });
-            console.log(data)
+            
+            toast('Feedback has been sent!', {
+              action: {
+                label: 'Done',
+                onClick: () => window.location.reload()
+              },
+            })
+            console.log("Sent!")
+
             console.log('Form submitted successfully:', response.data);
         }catch(error){
             console.error('Error submitting form:', error);
         }
     }
     
+    // const [isLoading, startLoading] = useTransition();
+    // const loading = function(data){
+    //     startLoading(async function(){
+    //       await onSubmit(data);
+    //     });
+    // }
     
     return(
         <>
@@ -92,7 +108,11 @@ export default function Feedback(){
         <div className="feedback-box">
       <Label htmlFor="feedback-area">Feedback</Label>
       <Textarea placeholder="Leave your feedback here." id="feedback-area" {...register("feedback",{required: "Feedback field cannot be empty"})}/>
-      <Button>Send message</Button>
+      <Toaster position="bottom-center"/>
+      <Button type="submit">
+      {/* {isLoading ? "Sending ..." : ""} */}
+      {/* continue working on this and implementing a toast instead */}
+        Send message</Button>
       <p className="text-sm text-muted-foreground">
         Your feedback will be sent to the support team.
       </p>
@@ -101,6 +121,7 @@ export default function Feedback(){
         </div>
         
         </form>
-        </>
+       
+        </> 
     );
 }
