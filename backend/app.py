@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, request
+from flask import Flask
+from flask_cors import CORS
 import psycopg2
 from dotenv import find_dotenv, load_dotenv
 import sys, os
@@ -9,6 +10,10 @@ from routes import health_bp,comments_bp, sentiment_bp
 
 
 app = Flask(__name__)
+# enable CORS. Extend to resource specific CORS
+# CORS(app, resources={r"/*": {"origins": "http://localhost:5173", "allow_headers": "*"}})
+CORS(app)
+ 
 
 
 # load .env variables
@@ -18,15 +23,15 @@ else:
     print(".env file loaded successfully!") 
 
 # errors with migration need to work on integrating this
-#migrating to database
+# migrating to database
 # app.config.from_mapping(
 #     MIGRATIONS_PATH=os.path.abspath('database/migrations'),
 #     PSYCOPG_CONNINFO=os.getenv("DATABASE_URL")
 # )
 
-# MigratePg(app)
+MigratePg(app)
+ 
 
-print(app.url_map)
 
 app.register_blueprint(health_bp)
 app.register_blueprint(sentiment_bp, url_prefix ="/model")
