@@ -1,5 +1,7 @@
 
 import "./Feedback.css"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import {Toaster, toast} from 'sonner'
 // import { useTransition } from "react"
 import { Input } from "@/components/ui/input"
@@ -21,13 +23,22 @@ import {
 
 export default function Feedback(){
 
+    // handle navigation for toast
+    const navigate = useNavigate()
+
+    // handle multiple submissions
+    const [isSubmitted, setIsSubmitted] = useState(false);
+
     // initialize react-hook-form
     const {register, handleSubmit, formState: {errors}, setValue} = useForm();
     
     // handle onsubmit
     const onSubmit = async function(data, e){
         e.preventDefault();
+        // prevent multiple submissions
+        if (isSubmitted) return;
         try{
+          setIsSubmitted(true)
             const response = await axios.post('http://localhost:5000/comments/add', data,  {headers: {
               'Content-Type': 'application/json',
             },
@@ -48,7 +59,7 @@ export default function Feedback(){
           action: {
             label: 'Done',
             // reload page without resending form data
-            onClick: () => window.location.href = "/form"
+            onClick: () => navigate("/") 
           },
         })
     }
