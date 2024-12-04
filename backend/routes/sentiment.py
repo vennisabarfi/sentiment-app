@@ -13,6 +13,12 @@ sentiment_pipeline = sentiment_model()
 emotion_sentiment_pipeline = emotion_sentiment_model()
 
 
+# view all sentiments
+
+
+# view average sentiments
+
+
 # get the emotional sentiment of a specific comment by id
 @sentiment_bp.route("/sentiment/<id>", methods=["GET"])
 def get_sentiment(id):

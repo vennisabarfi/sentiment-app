@@ -15,7 +15,7 @@ import "./Menubar.css"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 
-  import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
+import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
 
 export default function MenuBar(){
 

@@ -67,8 +67,38 @@ def view_comment():
     finally:
         cur.close()
         conn_pool.putconn(conn)
+        
+# view number of comments
+@comments_bp.route("/total", methods=["GET"])
+def view_total_comments():
+    headers = {'Access-Control-Allow-Origin': '*',
+               'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+               'Access-Control-Allow-Headers': 'Content-Type'}
+    if request.method.lower() == 'options':
+        return jsonify(headers), 200
+    
+    conn_pool, conn, cur = databaseConnection()
+    try:
+        cur.execute("SELECT * FROM user_comments")
+        comments = cur.fetchall()
+        total_comments = len(comments)
+        print(total_comments)
+        conn.commit()
+        return {"Total Feedback": total_comments}
+    except Exception as err:
+        conn.rollback()
+        print("Error retrieving data from database", err)
+        return jsonify({"message":f"Error retrieving data from database, {err}"})
+    finally:
+        cur.close()
+        conn_pool.putconn(conn)
 
-       
+# view average ratings
+
+
+# view average sentiments
+
+
 # view comments by id
 @comments_bp.route("/view/<id>", methods=["GET"])
 def view_all_comments(id):
