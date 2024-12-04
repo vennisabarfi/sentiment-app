@@ -1,0 +1,26 @@
+.sidebar-layout{
+    display: inline-block;
+    margin-right: 2%;
+   
+}
+
+.sidebar-icon{
+    margin-top: 50%;
+    scale: 1.3;
+    
+}
+
+.dashboard-layout{
+    display: inline-block;
+    vertical-align: top;
+
+}
+
+.name-header{
+    margin-top: 5%;
+    font-size: 1.7rem; /* text-2xl */
+    font-weight: 700; /* font-bold */
+    letter-spacing: -0.025em; /* tracking-tight */
+ 
+}
+
