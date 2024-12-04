@@ -12,6 +12,8 @@ import {
     TabsTrigger,
   } from "@/components/ui/tabs"
 import { TabsContent } from "@radix-ui/react-tabs";
+import DateRangePicker from "./DateRangePicker";
+
 
 export default function Dashboard(){
     return(
@@ -36,15 +38,14 @@ export default function Dashboard(){
     
         <div className="dashboard-layout ">
 
-            <div className="header">
-            <h2 className="name-header">Hi, Welcome back 👋</h2>
-            <div className="toggle-mode">
+        <div className="toggle-mode">
+            <DateRangePicker/>
             <ModeToggle/>
             </div>
 
-    
-                
-        </div>
+            <div className="header">
+            <h2 className="name-header">Hi, Welcome back 👋</h2>      
+            </div>
           
         <div className="overview-analytics">
         <Tabs defaultValue="overview" className="space-y-4">
