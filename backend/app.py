@@ -29,7 +29,7 @@ else:
 #     PSYCOPG_CONNINFO=os.getenv("DATABASE_URL")
 # )
 
-MigratePg(app)
+# MigratePg(app)
  
 
 
