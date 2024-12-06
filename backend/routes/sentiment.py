@@ -108,16 +108,25 @@ def process_feedback():
             rating_result = rating_pipeline(feedback_text)
             emotion_result = emotion_sentiment_pipeline(feedback_text)
 
+            try:
+                
             #Extract results (maybe work on the names lol)
-            sentiment_rating = rating_result[0]["label"]   # e.g., '4.2'
-            print(sentiment_rating)
-            # convert sentiment rating to numerical instead text
-            sentiment_rating_t = sentiment_rating.split()
-            print(sentiment_rating_t)  
+                sentiment_label = emotion_result[0]["label"]  # e.g., 'positive'
+                sentiment_rating_text = rating_result[0]["label"]   # e.g., '4.2'
             
-            sentiment_label = emotion_result[0]["label"]  # e.g., 'positive' 
+            # convert sentiment rating to numerical instead text
+            # split from '5 stars' to 5 as an integer
+                sentiment_rating = int(sentiment_rating_text.split()[0])
+                
+            except Exception as e:
+                print("Error extracting rating: ", e)
+            except IndexError as index_e:
+                print("Error as array is out of range: ", index_e)
+            except  ValueError as value_e:
+                print("Error converting to integer", value_e)
+            
 
-            # Step 3: Insert the sentiment analysis result into the sentiments table
+            # Insert the sentiment analysis result into the sentiments table
             cur.execute("""
                 INSERT INTO sentiments (
                     user_comment_id, sentiment_rating, sentiment_label
@@ -131,11 +140,8 @@ def process_feedback():
 
      
         conn.commit()
-        # results = json.dumps(feedback_id, sentiment_rating, sentiment_rating)
-        # print(f"Process complete:\n {results}")
         print(f"Processed {len(feedback_list)} feedback entries.")
-    # except psycopg2 as err:
-    #     print("Database error", err)
+   
     except Exception as e:
         conn.rollback()
         print(f"Error processing feedback: {e}")
