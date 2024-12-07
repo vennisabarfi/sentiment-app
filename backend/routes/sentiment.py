@@ -4,6 +4,7 @@ from database import databaseConnection
 import psycopg2
 import json
 
+
 sentiment_bp = Blueprint("sentiment", __name__)
 
 
@@ -150,6 +151,7 @@ def process_feedback():
         cur.close()
         conn.close() 
         
+
 
 @sentiment_bp.route("/process", methods=["POST"])
 def process_feedback_route():
