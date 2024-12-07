@@ -1,8 +1,8 @@
 from flask import request, Blueprint, jsonify
 from models import sentiment_model, emotion_sentiment_model
-from database import databaseConnection
+from database import databaseConnection, close_db
 import psycopg2
-import json
+
 
 
 sentiment_bp = Blueprint("sentiment", __name__)
@@ -50,7 +50,10 @@ def get_sentiment(id):
         print("Database error", err)
         return jsonify({"Error Message":f"Database error with this request"}),400
     except Exception as e:
-         return jsonify({"message": f"An unexpected error occurred: {str(e)}"}), 500
+        print("An error occured: ", e)
+        return jsonify({"message": "Error completing request"}), 500
+    finally:
+        close_db(conn_pool=conn_pool, conn=conn, cur=cur)
 
   
 # get rating of comment (out of 5 stars)
@@ -82,7 +85,68 @@ def get_rating(id):
         print("Database error", err)
         return jsonify({"Error Message":f"Database error with this request"}),400
     except Exception as e:
-         return jsonify({"message": f"An unexpected error occurred: {str(e)}"}), 500
+        print("An error occured: ", e)
+        return jsonify({"message": "Error completing request"}), 500
+    finally:
+        close_db(conn_pool=conn_pool, conn=conn, cur=cur)
+
+# view all ratings with their id  (work on this). Integrate with user_comments table may need to work on this on comments.py
+@sentiment_bp.route("rating/all", methods=["GET"])
+def view_ratings_by_id():
+    headers = {'Access-Control-Allow-Origin': '*',
+               'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+               'Access-Control-Allow-Headers': 'Content-Type'}
+    if request.method.lower() == 'options':
+        return jsonify(headers), 200
+    
+    conn_pool, conn, cur = databaseConnection()
+    # select all the ratings and
+    try:
+        cur.execute("SELECT * FROM sentiments")
+        comments = cur.fetchall()
+        conn.commit()
+        return {"Comments found": comments}
+    except Exception as e:
+        print("An error occured: ", e)
+        return jsonify({"message": "Error completing request"}), 500
+    finally:
+        close_db(conn_pool=conn_pool, conn=conn, cur=cur)
+
+# view average of all ratings
+@sentiment_bp.route("rating/average", methods=["GET"])
+def view_all_ratings():
+    headers = {'Access-Control-Allow-Origin': '*',
+               'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+               'Access-Control-Allow-Headers': 'Content-Type'}
+    if request.method.lower() == 'options':
+        return jsonify(headers), 200
+    
+    conn_pool, conn, cur = databaseConnection()
+    # select all the ratings and
+    try:
+        cur.execute("SELECT AVG(sentiment_rating) FROM sentiments")
+        average_value = cur.fetchall()
+   
+        conn.commit()
+        
+        try: 
+               
+           sentiments_average = float((average_value[0][0]))
+            
+        except ValueError as err:
+            print("Error converting SQL tuple result to integer", err)
+            
+        return {"Average Rating": sentiments_average}
+    except Exception as e:
+        print("An error occured: ", e)
+        return jsonify({"message": "Error completing request"}), 500
+    finally:
+        close_db(conn_pool=conn_pool, conn=conn, cur=cur)
+
+#view average sentiments?
+#view average ratings per product
+# view average sentiments per product
+
 
 
 # run feedback through sentiment and rating models
@@ -148,8 +212,7 @@ def process_feedback():
         print(f"Error processing feedback: {e}")
 
     finally:
-        cur.close()
-        conn.close() 
+        close_db(conn_pool=conn_pool, conn=conn, cur=cur)
         
 
 

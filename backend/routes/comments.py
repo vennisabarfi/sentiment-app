@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, Blueprint
-from database import databaseConnection
+from database import databaseConnection, close_db
 import psycopg2
  
 
@@ -36,12 +36,12 @@ def add_comment():
         comment_id = cur.fetchone()[0]
         return jsonify({"message": "Comment added successfully", "id": comment_id}), 201
     except Exception as err:
-        conn.rollback()
+        if conn:
+            conn.rollback()
         print("Error inserting data:", err)
         return {"message": err}
     finally:
-        cur.close()
-        conn_pool.putconn(conn)
+        close_db(conn_pool=conn_pool, conn=conn, cur=cur)
 
 
 
@@ -60,13 +60,11 @@ def view_comment():
         comments = cur.fetchall()
         conn.commit()
         return {"Comments found": comments}
-    except Exception as err:
-        conn.rollback()
-        print("Error retrieving data from database", err)
-        return jsonify({"message":f"Error retrieving data from database, {err}"})
+    except Exception as e:
+        print("An error occured: ", e)
+        return jsonify({"message": "Error completing request"}), 500
     finally:
-        cur.close()
-        conn_pool.putconn(conn)
+        close_db(conn_pool=conn_pool, conn=conn, cur=cur)
         
 # view number of comments
 @comments_bp.route("/total", methods=["GET"])
@@ -85,23 +83,21 @@ def view_total_comments():
         print(total_comments)
         conn.commit()
         return {"Total Feedback": total_comments}
-    except Exception as err:
-        conn.rollback()
-        print("Error retrieving data from database", err)
-        return jsonify({"message":f"Error retrieving data from database, {err}"})
+    except psycopg2 as err:
+        print("Database error", err)
+        return jsonify({"Error Message":f"Database error with this request"}),400
+    except Exception as e:
+        print("An error occured: ", e)
+        return jsonify({"message": "Error completing request"}), 500
     finally:
-        cur.close()
-        conn_pool.putconn(conn)
-
-# view average ratings
+        close_db(conn_pool=conn_pool, conn=conn, cur=cur)
 
 
-# view average sentiments
 
 
 # view comments by id
 @comments_bp.route("/view/<id>", methods=["GET"])
-def view_all_comments(id):
+def view_comments_by_id(id):
     try:
          comment_id = int(id) 
     except ValueError as err:
@@ -122,16 +118,14 @@ def view_all_comments(id):
         else:
             conn.commit()
             return {"Comments found": comments}
-    except psycopg2.Error as e:
-        print("Error with SQL Request", e)
-        return jsonify({"message": f"Comment with this ID not found: {e}"})
-    except Exception as err:
-        conn.rollback()
-        print("Error retrieving data from database", err)
-        return jsonify({"message":f"Error retrieving data from database, {err}"})
+    except psycopg2 as err:
+        print("Database error", err)
+        return jsonify({"Error Message":f"Database error with this request"}),400
+    except Exception as e:
+        print("An error occured: ", e)
+        return jsonify({"message": "Error completing request"}), 500
     finally:
-        cur.close()
-        conn_pool.putconn(conn)
+        close_db(conn_pool=conn_pool, conn=conn, cur=cur)
 
 
 #remove comment feature. implement after clerk integration

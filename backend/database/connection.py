@@ -20,3 +20,12 @@ def databaseConnection():
         print("Error establishing database connection", err)
         sys.exit(1) #exit program if the connection fails
     return conn_pool, conn, cur
+
+def close_db(conn_pool, conn, cur):
+    try:
+        if cur:
+            cur.close()
+        if conn:
+            conn_pool.putconn(conn)
+    except Exception as err:
+        print("Error closing db connection", err)

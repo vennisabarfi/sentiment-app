@@ -69,12 +69,13 @@ else:
 app.register_blueprint(health_bp)
 app.register_blueprint(sentiment_bp, url_prefix ="/model")
 app.register_blueprint(comments_bp, url_prefix="/comments")
+ 
 
 
-
-
+ 
 
 
 
 if __name__ == '__main__': 
-    app.run(debug=True)
+    app.run(debug=True) 
+    # changed to stat to avoid socket errors (OSErrors) when reloading

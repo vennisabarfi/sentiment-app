@@ -1,1 +1,1 @@
-from .connection import databaseConnection
+from .connection import databaseConnection, close_db
