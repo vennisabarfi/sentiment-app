@@ -4,12 +4,45 @@ import psycopg2
 from dotenv import find_dotenv, load_dotenv
 import sys, os
 from flask_migratepg import MigratePg
+from flask_apscheduler import APScheduler
 
 from database import databaseConnection
 from routes import health_bp,comments_bp, sentiment_bp
+from cron import process_feedback
 
+
+# set configuration values
+class Config:
+    SCHEDULER_API_ENABLED = True
+    
+    
+app = Flask(__name__)
+
+# Set configuration values
+class Config:
+    SCHEDULER_API_ENABLED = True
 
 app = Flask(__name__)
+app.config.from_object(Config())
+
+# Initialize scheduler
+scheduler = APScheduler()
+scheduler.init_app(app)
+
+# cron job runs every day at the start of the day
+@scheduler.task('cron', id='daily_process_job', hour ='0', minute='0')
+def my_job():
+    with app.app_context():
+        try:
+            process_feedback()
+            print("Cron job successful")
+        except Exception as error:
+            print("Error completing cron job: ", error)
+            
+
+# Start the scheduler
+scheduler.start()
+
 # enable CORS. Extend to resource specific CORS
 # CORS(app, resources={r"/*": {"origins": "http://localhost:5173", "allow_headers": "*"}})
 CORS(app)
@@ -29,7 +62,7 @@ else:
 #     PSYCOPG_CONNINFO=os.getenv("DATABASE_URL")
 # )
 
-MigratePg(app)
+# MigratePg(app)
  
 
 

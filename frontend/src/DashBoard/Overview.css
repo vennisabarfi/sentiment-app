@@ -1,10 +1,14 @@
 .overview-cards{
     display: flex;
     flex-direction: row;
-    gap: 10%;
-    width: 100%;
+    gap: 5%;
+   
     align-content: space-evenly;
   
+}
+
+.overview-card{
+    min-width: 30%;
 }
 
 /* mobile settings */
