@@ -129,6 +129,29 @@ def view_comments_by_id(id):
 
 
 #remove comment feature. implement after clerk integration
-comments_bp.route("/remove", methods=["DELETE"])
+@comments_bp.route("/remove", methods=["DELETE"])
 def remove_comment(id):
     pass
+
+
+# run a cron/interval job to randomly show feedback from id 1 to len(array of results)
+#  will run a select query from this array of numbers 
+@comments_bp.route("/view/random", methods=["GET"])
+def view_random_comments():
+    headers = {'Access-Control-Allow-Origin': '*',
+               'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+               'Access-Control-Allow-Headers': 'Content-Type'}
+    if request.method.lower() == 'options':
+        return jsonify(headers), 200
+    
+    conn_pool, conn, cur = databaseConnection()
+    try:
+        cur.execute("SELECT * FROM user_comments")
+        comments = cur.fetchall()
+        conn.commit()
+        return {"Comments found": comments}
+    except Exception as e:
+        print("An error occured: ", e)
+        return jsonify({"message": "Error completing request"}), 500
+    finally:
+        close_db(conn_pool=conn_pool, conn=conn, cur=cur)

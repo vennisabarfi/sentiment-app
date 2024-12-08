@@ -104,7 +104,7 @@ def view_ratings_by_id():
     try:
         cur.execute("SELECT * FROM sentiments")
         comments = cur.fetchall()
-        conn.commit()
+        # conn.commit()
         return {"Comments found": comments}
     except Exception as e:
         print("An error occured: ", e)
@@ -131,6 +131,44 @@ def view_all_ratings():
         
         try: 
                
+           sentiments_average= float((average_value[0][0]))  
+        except ValueError as err:
+            print("Error converting SQL tuple result to a float", err)
+            
+        return {"Average Rating": sentiments_average}
+    except Exception as e:
+        print("An error occured: ", e)
+        return jsonify({"message": "Error completing request"}), 500
+    finally:
+        close_db(conn_pool=conn_pool, conn=conn, cur=cur)
+        
+# work on this
+#view average ratings per product
+@sentiment_bp.route("rating/average/<product>", methods=["GET"])
+def view_ratings_per_product(product):
+    headers = {'Access-Control-Allow-Origin': '*',
+               'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+               'Access-Control-Allow-Headers': 'Content-Type'}
+    if request.method.lower() == 'options':
+        return jsonify(headers), 200
+    
+    try:
+        
+        validated_product = str(product.lower)
+    except ValueError as err:
+        print("Product Value should be string", err)
+    # work on if item not in range 
+    
+    conn_pool, conn, cur = databaseConnection()
+    # select all the ratings and
+    try:
+        cur.execute("SELECT AVG(sentiment_rating) FROM sentiments")
+        average_value = cur.fetchall()
+   
+        conn.commit()
+        
+        try: 
+               
            sentiments_average = float((average_value[0][0]))
             
         except ValueError as err:
@@ -143,10 +181,55 @@ def view_all_ratings():
     finally:
         close_db(conn_pool=conn_pool, conn=conn, cur=cur)
 
-#view average sentiments?
-#view average ratings per product
-# view average sentiments per product
+# view positive comments only (sentiment label), sepcifically total
+@sentiment_bp.route("positive/all", methods=["GET"])
+def view_total_positive():
+    headers = {'Access-Control-Allow-Origin': '*',
+               'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+               'Access-Control-Allow-Headers': 'Content-Type'}
+    if request.method.lower() == 'options':
+        return jsonify(headers), 200
+    
 
+    
+    conn_pool, conn, cur = databaseConnection()
+    # work on if array is empty
+    try:
+        cur.execute("SELECT sentiment_label FROM sentiments WHERE sentiment_label='positive'")
+        positive_values = len(cur.fetchall())
+   
+        # conn.commit()
+        return {"Positive Sentiments": positive_values}
+    except Exception as e:
+        print("An error occured: ", e)
+        return jsonify({"message": "Error completing request"}), 500
+    finally:
+        close_db(conn_pool=conn_pool, conn=conn, cur=cur)
+
+
+# view negative comments only (sentiment label), sepcifically total
+@sentiment_bp.route("negative/all", methods=["GET"])
+def view_total_negative():
+    headers = {'Access-Control-Allow-Origin': '*',
+               'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+               'Access-Control-Allow-Headers': 'Content-Type'}
+    if request.method.lower() == 'options':
+        return jsonify(headers), 200
+
+    
+    conn_pool, conn, cur = databaseConnection()
+    # work on if array is empty
+    try:
+        cur.execute("SELECT sentiment_label FROM sentiments WHERE sentiment_label='negative'")
+        negative_values = len(cur.fetchall())
+   
+        # conn.commit()
+        return {"Negative Sentiments": negative_values}
+    except Exception as e:
+        print("An error occured: ", e)
+        return jsonify({"message": "Error completing request"}), 500
+    finally:
+        close_db(conn_pool=conn_pool, conn=conn, cur=cur)
 
 
 # run feedback through sentiment and rating models
@@ -226,4 +309,4 @@ def process_feedback_route():
         return jsonify({'Process failed': e}), 500
         
    
-    
+

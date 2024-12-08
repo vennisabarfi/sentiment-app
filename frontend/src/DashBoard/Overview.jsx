@@ -5,13 +5,23 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
+    CardDescription,
   } from "@/components/ui/card"
   
 import { useState, useEffect } from "react";
 import axios from "axios";
+// import { Bar, BarChart,  CartesianGrid, XAxis } from "recharts"
+
+
+
 export default function Overview(){
     
   const [totalfeedback, setTotalFeedback] = useState([]);
+  const [averagerating, setAverageRating] = useState([]);
+  const [positivesentiment, setPostiveSentiment] = useState([]);
+  const [negativesentiment, setNegativeSentiment] = useState([]);
+  const [commentsdata, setCommentsData] = useState([]);
+  const [loading, setLoading] = useState(true); //update this to react loader
   const [serverMessage, setServerMessage] = useState('');
   const [serverErrors, setServerErrors] = useState('');
 
@@ -27,7 +37,7 @@ export default function Overview(){
           if (response.status === 200) {
 
             setServerMessage(response.data.message)
-            console.log(response.data)
+            // console.log(response.data)
           }
 
         }catch (error) {
@@ -38,6 +48,110 @@ export default function Overview(){
       }
       fetchTotalFeedbackData();
   }, [])
+
+    // receive total positive sentiments from backend
+    useEffect(function(){
+      async function fetchPositiveSentimentsData(){
+        try {
+          const response = await axios.get(`http://localhost:5000/model/positive/all`);
+
+          // work on fixing decimal points issue
+          setPostiveSentiment(response.data["Positive Sentiments"]);
+        
+         
+          if (response.status === 200) {
+
+            setServerMessage(response.data.message)
+            
+          }
+
+        }catch (error) {
+          setServerErrors(error.response.data.message)
+            
+          console.log(`Error retrieving resources information: ${error.response.data.message}`)
+        }
+      }
+      fetchPositiveSentimentsData();
+  }, [])
+
+     // receive negative sentiments value from backend
+     useEffect(function(){
+      async function fetchNegativeSentimentsData(){
+        try {
+          const response = await axios.get(`http://localhost:5000/model/negative/all`);
+
+          // work on fixing decimal points issue
+          setNegativeSentiment(response.data["Negative Sentiments"]);
+        
+         
+          if (response.status === 200) {
+
+            setServerMessage(response.data.message)
+           
+          }
+
+        }catch (error) {
+          setServerErrors(error.response.data.message)
+            
+          console.log(`Error retrieving resources information: ${error.response.data.message}`)
+        }
+      }
+      fetchNegativeSentimentsData();
+  }, [])
+
+
+     // receive average ratings value from backend
+     useEffect(function(){
+      async function fetchAverageRatingData(){
+        try {
+          const response = await axios.get(`http://localhost:5000/model/rating/average`);
+
+          // work on fixing decimal points issue
+          setAverageRating(response.data["Average Rating"]);
+        
+         
+          if (response.status === 200) {
+
+            setServerMessage(response.data.message)
+            console.log(response.data.value)
+          }
+
+        }catch (error) {
+          setServerErrors(error.response.data.message)
+            
+          console.log(`Error retrieving resources information: ${error.response.data.message}`)
+        }
+      }
+      fetchAverageRatingData();
+  }, [])
+
+ 
+// view comment data in intervals
+ useEffect(function(){
+  async function fetchCommentsData(){
+    // loading information
+    setLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:5000/comments/total`);
+
+      setCommentsData(response.data["Total Feedback"]);
+    
+     
+      if (response.status === 200) {
+
+        setServerMessage(response.data.message)
+        // console.log(response.data)
+      }
+
+    }catch (error) {
+      setServerErrors(error.response.data.message)
+        
+      console.log(`Error retrieving resources information: ${error.response.data.message}`)
+    }
+  }
+  fetchCommentsData();
+}, [])
+
 
   return(
 
@@ -69,10 +183,10 @@ export default function Overview(){
 {/* average ratings */}
 <Card className="overview-card">
   <CardHeader>
-    <CardTitle className="mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">Average Ratings</CardTitle>
+    <CardTitle className="mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">Average Rating</CardTitle>
   </CardHeader>
   <CardContent className="-mt-2 scroll-m-20 text-3xl font-semibold tracking-tight">
-    <p>3.4</p>
+    <p>{averagerating}</p>
   </CardContent>
   <CardFooter className="text-sm text-muted-foreground">
     <p>*rated out of 5</p>
@@ -85,10 +199,10 @@ export default function Overview(){
     <CardTitle className="mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">Positive</CardTitle>
   </CardHeader>
   <CardContent className="-mt-2 scroll-m-20 text-3xl font-semibold tracking-tight">
-    <p>67</p>
+    <p>{positivesentiment}</p>
   </CardContent>
   <CardFooter className="text-sm text-muted-foreground">
-    <p>*Greater than 3.5/5</p>
+    <p>*Greater than 3/5</p>
   </CardFooter>
 </Card>
 
@@ -97,16 +211,57 @@ export default function Overview(){
     <CardTitle className="mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">Negative</CardTitle>
   </CardHeader>
   <CardContent className="-mt-2 scroll-m-20 text-3xl font-semibold tracking-tight">
-    <p>35</p>
+    <p>{negativesentiment}</p>
   </CardContent>
   <CardFooter className="text-sm text-muted-foreground">
-    <p>*Less than 2.5/5</p>
+    <p>*Less than 3/5</p>
   </CardFooter>
 </Card>
 
 
+</div>
 
+<div>
+  <br/>
 
+<Card>
+  
+  <h1>hello</h1>
+  <span>{commentsdata}</span>
+</Card>
+</div>
+
+<div className="chart-comments-section">
+
+  <div className="chart">
+  <Card>
+  <CardHeader>
+    <CardTitle>Chart Section</CardTitle>
+    <CardDescription>Card Description</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p>Card Content</p>
+  </CardContent>
+  <CardFooter>
+    <p>Card Footer</p>
+  </CardFooter>
+</Card>
+  </div>
+
+  <div className="comments-section">
+  <Card>
+  <CardHeader>
+    <CardTitle>Incoming Comments</CardTitle>
+    <CardDescription>Card Description</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p>Card Content</p>
+  </CardContent>
+  <CardFooter>
+    <p>Card Footer</p>
+  </CardFooter>
+</Card>
+  </div>
 </div>
 
 
