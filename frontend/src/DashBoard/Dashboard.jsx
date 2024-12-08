@@ -21,7 +21,7 @@ export default function Dashboard(){
       
         <>
           
-       <body>
+       <body className="dashboard-container">
           
         <div className="sidebar-layout">
         <SidebarProvider
@@ -37,7 +37,7 @@ export default function Dashboard(){
         </div>
     
         <div className="dashboard-layout ">
-
+        
         <div className="toggle-mode">
             <DateRangePicker/>
             <ModeToggle/>
@@ -68,10 +68,11 @@ export default function Dashboard(){
           </TabsContent>
           
             </Tabs>
-           
+         
         </div>
+       
         </div>
-
+       
         </body>
 
         {/* Overview and Analytics Toggle */}

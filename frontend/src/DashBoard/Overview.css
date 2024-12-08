@@ -1,10 +1,11 @@
+
+
 .overview-cards{
     display: flex;
     flex-direction: row;
     gap: 5%;
-   
-    align-content: space-evenly;
-  
+    grid-template-rows:auto;
+
 }
 
 .overview-card{
@@ -13,11 +14,19 @@
 
 /* chart and comments section */
 .chart-comments-section{
- margin-top: 10%;
+ /* margin-top: 10%;
  display: flex;
  flex-direction: row;
  align-content: space-evenly;
- gap: 5%;
+ grid-template-columns: 200px 200px;
+ gap: 5%; */
+
+ display: grid; 
+padding: 1rem; 
+grid-template-columns: repeat(1, minmax(0, 1fr)); 
+gap: 1rem; 
+max-width: 1280px; 
+
 
 }
 
@@ -25,8 +34,14 @@
  
 }
 
-.comments-section{
+.comments-card{
+ /* width: 40% */
+}
 
+.avatar-name{
+    display: flex;
+    flex-direction: row;
+    gap: 5%;
 }
 
 /* mobile settings */
@@ -45,8 +60,12 @@
   
    }
 
+   .comments-card{
+    max-width: 70%;
+   }
    .chart{
     margin-bottom: 10%;
+    max-width: 70%;
    }
    .date-filter{
     width: 200%;

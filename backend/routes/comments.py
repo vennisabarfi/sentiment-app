@@ -177,11 +177,27 @@ def view_random_comments():
         
         print(result_arr)
         
+        
         # debug this tomorrow
-        result= cur.execute(f"SELECT * FROM user_comments WHERE id IN ({placeholders})", result_arr)
+        cur.execute(f"SELECT * FROM user_comments WHERE id IN ({placeholders})", result_arr)
+        results = cur.fetchall()
         conn.commit()
         
-        return {"Comments found": result}
+        # initialize types so data is json ready for frontend. work on order problem
+        serialized_comments = [
+            {
+                "id": comment[0],
+                "first_name": comment[1],
+                "last_name": comment[2],
+                "feedback": comment[3],
+                "email": comment[4],
+                "product_type": comment[5],
+                "created_at": comment[6],
+                "updated_at": comment[7]
+            } for comment in results
+        ]
+        
+        return jsonify({"Random Comments": serialized_comments })
     
         
     except Exception as e:

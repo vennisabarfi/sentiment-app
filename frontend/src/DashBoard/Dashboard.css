@@ -1,6 +1,16 @@
+.dashboard-container{
+  width: 100%;
+  display: grid;
+  grid-template-areas: "sidebar-layout dashboard-layout";
+  grid-template-columns: 200px auto;
+}
+
 .sidebar-layout{
-    display: inline-block;
-    margin-right: 2%;
+    /* display: inline-block;
+    margin-right: 2%; */
+  grid-area: sidebar-layout;
+  height: 100vw;
+  
    
 }
 
@@ -11,9 +21,12 @@
 }
 
 .dashboard-layout{
-    display: inline-block;
-    vertical-align: top;
-    margin-left: 3%;
+    /* display: inline-block; */
+    /* vertical-align: top;
+    margin-left: 3%; */
+  grid-area: dashboard-layout;
+  height: 100vw;
+ 
 
 }
 
@@ -54,6 +67,12 @@
 /* Mobile-specific styles */
 @media screen and (max-width: 768px) {
     
+    .sidebar-layout{
+        margin-right: -10%;
+    }
+    .dashboard-layout{
+        margin-left: -40%; 
+    }
     .name-header {
         font-size: 1.5rem; /* Adjust for readability on phones */
         margin-top: 15%;
@@ -61,5 +80,6 @@
     .toggle-mode {
         margin-top: 1%;
         text-align: center; /* Center-align on small screens */
+        margin-left: -20%;
     }
 }

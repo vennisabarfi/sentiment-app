@@ -8,9 +8,15 @@ import {
     CardDescription,
   } from "@/components/ui/card"
   
+  import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+  } from "@/components/ui/avatar"
+
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Skeleton } from "@/components/ui/skeleton"
+// import { Skeleton } from "@/components/ui/skeleton"
 
 // import { Bar, BarChart,  CartesianGrid, XAxis } from "recharts"
 
@@ -22,8 +28,8 @@ export default function Overview(){
   const [averagerating, setAverageRating] = useState([]);
   const [positivesentiment, setPostiveSentiment] = useState([]);
   const [negativesentiment, setNegativeSentiment] = useState([]);
-  const [commentsdata, setCommentsData] = useState([]);
-  const [loading, setLoading] = useState(true); //update this to react loader
+  const [randomcommentsdata, setRandomCommentsData] = useState([]);
+  // const [loading, setLoading] = useState(true); //update this to react loader
   const [serverMessage, setServerMessage] = useState('');
   const [serverErrors, setServerErrors] = useState('');
 
@@ -115,7 +121,7 @@ export default function Overview(){
           if (response.status === 200) {
 
             setServerMessage(response.data.message)
-            console.log(response.data.value)
+        
           }
 
         }catch (error) {
@@ -134,28 +140,36 @@ export default function Overview(){
     // loading information
     
     try {
-      setLoading(true);
-      const response = await axios.get(`http://localhost:5000/comments/total`);
+      // setLoading(true);
+      const response = await axios.get(`http://localhost:5000/comments/view/random`);
 
-      setCommentsData(response.data["Total Feedback"]);
+      setRandomCommentsData(response.data["Random Comments"]);
     
+      console.log(response.data)
      
       if (response.status === 200) {
 
         setServerMessage(response.data.message)
-        setLoading(false)
+        // setLoading(false)
         // console.log(response.data)
       }
 
     }catch (error) {
       setServerErrors(error.response.data.message)
-      setLoading(false); //work on better integration
+      // setLoading(false); //work on better integration
         
       console.log(`Error retrieving resources information: ${error.response.data.message}`)
     }
   }
+
   fetchCommentsData();
-}, [])
+//   const intervalId = setInterval( fetchCommentsData, 5000) //every 10 seconds
+
+// // Cleanup the interval when the component unmounts
+// return () => clearInterval(intervalId);
+}, []); // Empty array ensures this runs once on mount
+ 
+
 
 // update this to be more dynamic
 // Render loading, error, or data
@@ -230,24 +244,14 @@ export default function Overview(){
 
 
 </div>
-{/* make this better. work on skeleton design */}
-<div>
-{loading && <div className="flex flex-col space-y-3">
-<Skeleton className="h-[125px] w-[250px] rounded-xl" />
-<div className="space-y-2">
-<Skeleton className="h-4 w-[250px]" />
-<Skeleton className="h-4 w-[200px]" />
-</div></div>}
-  {!loading && (
 
-    <Card>
-      <h1>hello</h1>
-      <span>{commentsdata}</span>
-    </Card>
-  )}
-</div>
 
-<div className="chart-comments-section">
+
+
+
+
+
+<div className="charts-comment-section">
 
   <div className="chart">
   <Card>
@@ -264,21 +268,37 @@ export default function Overview(){
 </Card>
   </div>
 
-  <div className="comments-section">
-  <Card>
-  <CardHeader>
-    <CardTitle>Incoming Comments</CardTitle>
-    <CardDescription>Card Description</CardDescription>
-  </CardHeader>
-  <CardContent>
-    <p>Card Content</p>
-  </CardContent>
-  <CardFooter>
-    <p>Card Footer</p>
-  </CardFooter>
-</Card>
-  </div>
+
+    <Card className="comments-card">
+     <CardHeader>New Feedback
+     <CardDescription>View New Feedback</CardDescription>
+     </CardHeader>
+      <div>
+        {randomcommentsdata?.map((randomcomment)=>(
+          <CardContent key={randomcomment.id}>
+          <div className="avatar-name" >
+          <Avatar>
+          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <AvatarFallback>FL</AvatarFallback>
+        </Avatar>
+    
+          <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">{randomcomment.first_name} {randomcomment.last_name}</h4>
+          </div>
+    
+          <div>
+            <p className="leading-7 [&:not(:first-child)]:mt-6">{randomcomment.feedback}Here my feedback blah blah</p>
+          </div>
+    
+         </CardContent>
+
+        ))}
+     
+     </div>
+    </Card>
+ 
 </div>
+
+
 
 
 
