@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, Blueprint
 from database import databaseConnection, close_db
 import psycopg2
+import random
  
 
 comments_bp = Blueprint("comments_bp", __name__)
@@ -131,11 +132,24 @@ def view_comments_by_id(id):
 #remove comment feature. implement after clerk integration
 @comments_bp.route("/remove", methods=["DELETE"])
 def remove_comment(id):
+    
     pass
 
 
 # run a cron/interval job to randomly show feedback from id 1 to len(array of results)
 #  will run a select query from this array of numbers 
+# receives length of table and generate 5 ids between 1 and length
+def generate_random_id(arr_length, db_results):
+    # find a better way to write this lol
+    if arr_length >= 5:
+        length = 5
+    else:
+        length = arr_length
+    
+    random_ids = random.choices(db_results, weights=None, cum_weights=None, k=length)
+    return random_ids
+
+
 @comments_bp.route("/view/random", methods=["GET"])
 def view_random_comments():
     headers = {'Access-Control-Allow-Origin': '*',
@@ -144,12 +158,32 @@ def view_random_comments():
     if request.method.lower() == 'options':
         return jsonify(headers), 200
     
+    
     conn_pool, conn, cur = databaseConnection()
     try:
-        cur.execute("SELECT * FROM user_comments")
+        # convert this to a transaction for ACID
+        cur.execute("SELECT id FROM user_comments")
         comments = cur.fetchall()
+        
+        
+        random_ids = generate_random_id(arr_length=len(comments), db_results=comments)
+        print((random_ids))
+        result_arr =[]
+        for i in random_ids:
+            result_arr.append(i[0])
+          
+        # Construct the query with the correct number of placeholders. also make this look nicer lol. ugly ass code
+        placeholders = ', '.join(['%s'] * len(result_arr))  
+        
+        print(result_arr)
+        
+        # debug this tomorrow
+        result= cur.execute(f"SELECT * FROM user_comments WHERE id IN ({placeholders})", result_arr)
         conn.commit()
-        return {"Comments found": comments}
+        
+        return {"Comments found": result}
+    
+        
     except Exception as e:
         print("An error occured: ", e)
         return jsonify({"message": "Error completing request"}), 500

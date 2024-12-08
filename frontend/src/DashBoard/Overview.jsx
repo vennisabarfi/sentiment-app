@@ -10,6 +10,8 @@ import {
   
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Skeleton } from "@/components/ui/skeleton"
+
 // import { Bar, BarChart,  CartesianGrid, XAxis } from "recharts"
 
 
@@ -130,8 +132,9 @@ export default function Overview(){
  useEffect(function(){
   async function fetchCommentsData(){
     // loading information
-    setLoading(true);
+    
     try {
+      setLoading(true);
       const response = await axios.get(`http://localhost:5000/comments/total`);
 
       setCommentsData(response.data["Total Feedback"]);
@@ -140,17 +143,24 @@ export default function Overview(){
       if (response.status === 200) {
 
         setServerMessage(response.data.message)
+        setLoading(false)
         // console.log(response.data)
       }
 
     }catch (error) {
       setServerErrors(error.response.data.message)
+      setLoading(false); //work on better integration
         
       console.log(`Error retrieving resources information: ${error.response.data.message}`)
     }
   }
   fetchCommentsData();
 }, [])
+
+// update this to be more dynamic
+// Render loading, error, or data
+// if (loading) return( <
+// </div>);
 
 
   return(
@@ -220,15 +230,21 @@ export default function Overview(){
 
 
 </div>
-
+{/* make this better. work on skeleton design */}
 <div>
-  <br/>
+{loading && <div className="flex flex-col space-y-3">
+<Skeleton className="h-[125px] w-[250px] rounded-xl" />
+<div className="space-y-2">
+<Skeleton className="h-4 w-[250px]" />
+<Skeleton className="h-4 w-[200px]" />
+</div></div>}
+  {!loading && (
 
-<Card>
-  
-  <h1>hello</h1>
-  <span>{commentsdata}</span>
-</Card>
+    <Card>
+      <h1>hello</h1>
+      <span>{commentsdata}</span>
+    </Card>
+  )}
 </div>
 
 <div className="chart-comments-section">
